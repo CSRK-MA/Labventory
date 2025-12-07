@@ -1,0 +1,243 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Check if user is admin
+    function isAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Check if user is teacher or admin
+    function isTeacherOrAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'teacher'];
+    }
+    
+    // Check if user is lab assistant, teacher, or admin
+    function isLabStaffOrAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'teacher', 'lab-assistant'];
+    }
+    
+    // Check if user owns the document
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // Validate required fields exist
+    function hasRequiredFields(required) {
+      return request.resource.data.keys().hasAll(required);
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    match /users/{userId} {
+      // Anyone authenticated can read user profiles
+      allow read: if isSignedIn();
+      
+      // Users can create their own profile
+      allow create: if isSignedIn() && 
+                       request.auth.uid == userId &&
+                       hasRequiredFields(['email', 'role', 'createdAt']);
+      
+      // Users can update their own profile (except role)
+      allow update: if isOwner(userId) && 
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
+      
+      // Only admins can update user roles
+      allow update: if isAdmin() && 
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role']);
+      
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // EQUIPMENT COLLECTION
+    // ============================================
+    match /equipment/{equipmentId} {
+      // Anyone authenticated can read equipment
+      allow read: if isSignedIn();
+      
+      // Only teachers and admins can create equipment
+      allow create: if isTeacherOrAdmin() && 
+                       hasRequiredFields(['itemName', 'itemCode', 'category', 'status', 'createdAt']);
+      
+      // Teachers and admins can update equipment
+      // Lab assistants can only update status field
+      allow update: if (isTeacherOrAdmin()) ||
+                       (isLabStaffOrAdmin() && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'currentUser', 'currentUserName', 'lastCheckOut', 'lastCheckIn', 'updatedAt']));
+      
+      // Only admins can delete equipment
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // CHEMICALS COLLECTION
+    // ============================================
+    match /chemicals/{chemicalId} {
+      // Anyone authenticated can read chemicals
+      allow read: if isSignedIn();
+      
+      // Only teachers and admins can create chemicals
+      allow create: if isTeacherOrAdmin() && 
+                       hasRequiredFields(['chemicalName', 'chemicalCode', 'category', 'hazardLevel', 'createdAt']);
+      
+      // Teachers and admins can update chemicals
+      // Lab assistants can update quantity only
+      allow update: if (isTeacherOrAdmin()) ||
+                       (isLabStaffOrAdmin() && 
+                        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['quantity', 'updatedAt']));
+      
+      // Only admins can delete chemicals
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // CHECK-IN/OUT COLLECTION
+    // ============================================
+    match /checkInOut/{transactionId} {
+      // Anyone authenticated can read their own transactions
+      // Staff can read all transactions
+      allow read: if isSignedIn() && 
+                     (resource.data.userId == request.auth.uid || isLabStaffOrAdmin());
+      
+      // Anyone authenticated can create check-out transactions
+      allow create: if isSignedIn() && 
+                       hasRequiredFields(['itemType', 'itemId', 'userId', 'action', 'createdAt']) &&
+                       request.resource.data.userId == request.auth.uid;
+      
+      // Users can update their own transactions (for check-in)
+      // Staff can update any transaction
+      allow update: if isSignedIn() && 
+                       (resource.data.userId == request.auth.uid || isLabStaffOrAdmin());
+      
+      // Only admins can delete transactions
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // MAINTENANCE COLLECTION
+    // ============================================
+    match /maintenance/{maintenanceId} {
+      // Anyone authenticated can read maintenance records
+      allow read: if isSignedIn();
+      
+      // Only lab staff can create maintenance records
+      allow create: if isLabStaffOrAdmin() && 
+                       hasRequiredFields(['itemType', 'itemId', 'maintenanceType', 'scheduledDate', 'createdAt']);
+      
+      // Lab staff can update maintenance records
+      allow update: if isLabStaffOrAdmin();
+      
+      // Only admins can delete maintenance records
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // LABS COLLECTION
+    // ============================================
+    match /labs/{labId} {
+      // Anyone authenticated can read lab information
+      allow read: if isSignedIn();
+      
+      // Only admins can create labs
+      allow create: if isAdmin() && 
+                       hasRequiredFields(['labName', 'labCode', 'createdAt']);
+      
+      // Only admins can update labs
+      allow update: if isAdmin();
+      
+      // Only admins can delete labs
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // CATEGORIES COLLECTION
+    // ============================================
+    match /categories/{categoryId} {
+      // Anyone authenticated can read categories
+      allow read: if isSignedIn();
+      
+      // Only admins can manage categories
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ============================================
+    // NOTIFICATIONS COLLECTION
+    // ============================================
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if isSignedIn() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // System can create notifications (Cloud Functions)
+      // Admins can create notifications
+      allow create: if isAdmin();
+      
+      // Users can update their own notifications (mark as read)
+      allow update: if isSignedIn() && 
+                       resource.data.userId == request.auth.uid &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'readAt']);
+      
+      // Only admins can delete notifications
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // REPORTS COLLECTION
+    // ============================================
+    match /reports/{reportId} {
+      // Anyone authenticated can read reports
+      allow read: if isSignedIn();
+      
+      // Only teachers and admins can create reports
+      allow create: if isTeacherOrAdmin() && 
+                       hasRequiredFields(['reportType', 'generatedBy', 'createdAt']);
+      
+      // Creator and admins can update reports
+      allow update: if isAdmin() || 
+                       (isSignedIn() && resource.data.generatedBy == request.auth.uid);
+      
+      // Only admins can delete reports
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // ACTIVITY LOGS COLLECTION (Read-only for users)
+    // ============================================
+    match /activityLogs/{logId} {
+      // Staff can read activity logs
+      allow read: if isLabStaffOrAdmin();
+      
+      // Only system (Cloud Functions) can create logs
+      // Admins can also create logs manually
+      allow create: if isAdmin();
+      
+      // No one can update logs (immutable)
+      allow update: if false;
+      
+      // Only admins can delete logs
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // DEFAULT DENY
+    // ============================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
