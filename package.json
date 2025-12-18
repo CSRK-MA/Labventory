@@ -2,6 +2,7 @@
       "name": "Labventory",
       "version": "0.1.0",
       "private": true,
+      "homepage": "https://CSRK-MA.github.io/Labventory/",
       "dependencies": {
             "@radix-ui/react-accordion": "^1.2.3",
             "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -34,8 +35,10 @@
             "cmdk": "^1.1.1",
             "embla-carousel-react": "^8.6.0",
             "firebase": "^12.6.0",
+            "html2canvas": "^1.4.1",
             "html5-qrcode": "*",
             "input-otp": "^1.4.2",
+            "jspdf": "^3.0.4",
             "jsqr": "^1.4.0",
             "lucide-react": "^0.487.0",
             "next": "^16.1.0-canary.12",
@@ -49,6 +52,7 @@
             "react-resizable-panels": "^2.1.7",
             "react-router-dom": "^7.10.1",
             "recharts": "^2.15.2",
+            "save-dev": "^0.0.1-security",
             "sonner": "^2.0.3",
             "tailwind-merge": "*",
             "vaul": "^1.1.2"
@@ -64,7 +68,7 @@
       "scripts": {
             "dev": "vite",
             "build": "vite build",
-            "deploy": "gh-pages -d dist",
+            "deploy": "gh-pages -d build",
             "predeploy": "npm run build"
       }
 }

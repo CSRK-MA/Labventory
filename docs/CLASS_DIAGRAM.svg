@@ -1,0 +1,284 @@
+<svg viewBox="0 0 1800 1100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define styles -->
+  <defs>
+    <style>
+      .class-box { fill: #e8f4f8; stroke: #01579b; stroke-width: 2; }
+      .class-title { fill: #01579b; font-size: 16px; font-weight: bold; font-family: Arial, sans-serif; }
+      .class-attribute { fill: #1a237e; font-size: 12px; font-family: 'Courier New', monospace; }
+      .class-method { fill: #0d47a1; font-size: 12px; font-family: 'Courier New', monospace; font-style: italic; }
+      .abstract-method { fill: #0d47a1; font-size: 12px; font-family: 'Courier New', monospace; font-style: italic; text-decoration: underline; }
+      .relationship-line { stroke: #424242; stroke-width: 2; fill: none; }
+      .inheritance-line { stroke: #01579b; stroke-width: 2; fill: none; }
+      .aggregation-line { stroke: #d32f2f; stroke-width: 2; fill: none; }
+      .composition-line { stroke: #f57c00; stroke-width: 2; fill: none; }
+      .relationship-label { fill: #424242; font-size: 11px; font-family: Arial, sans-serif; font-weight: bold; }
+      .cardinality { fill: #d32f2f; font-size: 11px; font-family: Arial, sans-serif; font-weight: bold; }
+      .title { fill: #1a237e; font-size: 28px; font-weight: bold; font-family: Arial, sans-serif; }
+      .subtitle { fill: #424242; font-size: 14px; font-family: Arial, sans-serif; }
+      .stereotype { fill: #0d47a1; font-size: 11px; font-family: Arial, sans-serif; font-style: italic; }
+    </style>
+
+    <!-- Arrow markers for relationships -->
+    <marker id="inheritance-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="none" stroke="#01579b" stroke-width="2"/>
+    </marker>
+
+    <marker id="aggregation-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 5 3, 0 6" fill="none" stroke="#d32f2f" stroke-width="2"/>
+    </marker>
+
+    <marker id="composition-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 5 3, 0 6" fill="#f57c00" stroke="#f57c00" stroke-width="2"/>
+    </marker>
+
+    <marker id="association-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#424242" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1800" height="1100" fill="#fafafa"/>
+
+  <!-- Title -->
+  <text x="900" y="45" class="title" text-anchor="middle">EduTrack - UML Class Diagram</text>
+  <text x="900" y="68" class="subtitle" text-anchor="middle">Object-Oriented Architecture & Component Relationships</text>
+
+  <!-- ============ USER CLASS ============ -->
+  <rect x="50" y="120" width="280" height="280" rx="8" class="class-box"/>
+  <rect x="50" y="120" width="280" height="40" rx="8" fill="#01579b"/>
+  <text x="190" y="145" class="class-title" text-anchor="middle" fill="white">User</text>
+  
+  <line x1="50" y1="160" x2="330" y2="160" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Attributes -->
+  <text x="70" y="185" class="class-attribute">- userId: String</text>
+  <text x="70" y="205" class="class-attribute">- email: String</text>
+  <text x="70" y="225" class="class-attribute">- name: String</text>
+  <text x="70" y="245" class="class-attribute">- password: String (hashed)</text>
+  <text x="70" y="265" class="class-attribute">- role: UserRole</text>
+  <text x="70" y="285" class="class-attribute">- department: String</text>
+  <text x="70" y="305" class="class-attribute">- isActive: Boolean</text>
+  <text x="70" y="325" class="class-attribute">- createdAt: DateTime</text>
+  
+  <line x1="50" y1="340" x2="330" y2="340" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Methods -->
+  <text x="70" y="365" class="class-method">+ login(email, password): Boolean</text>
+  <text x="70" y="385" class="class-method">+ logout(): void</text>
+
+  <!-- ============ EQUIPMENT CLASS ============ -->
+  <rect x="420" y="120" width="300" height="300" rx="8" class="class-box"/>
+  <rect x="420" y="120" width="300" height="40" rx="8" fill="#01579b"/>
+  <text x="570" y="145" class="class-title" text-anchor="middle" fill="white">Equipment</text>
+  
+  <line x1="420" y1="160" x2="720" y2="160" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Attributes -->
+  <text x="440" y="185" class="class-attribute">- equipmentId: String</text>
+  <text x="440" y="205" class="class-attribute">- name: String</text>
+  <text x="440" y="225" class="class-attribute">- type: String</text>
+  <text x="440" y="245" class="class-attribute">- status: EquipmentStatus</text>
+  <text x="440" y="265" class="class-attribute">- location: String</text>
+  <text x="440" y="285" class="class-attribute">- assignedTo: User</text>
+  <text x="440" y="305" class="class-attribute">- lastMaintenance: DateTime</text>
+  <text x="440" y="325" class="class-attribute">- qrCode: String</text>
+  
+  <line x1="420" y1="340" x2="720" y2="340" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Methods -->
+  <text x="440" y="365" class="class-method">+ updateStatus(status): void</text>
+  <text x="440" y="385" class="class-method">+ scheduleMaintenance(date): void</text>
+  <text x="440" y="405" class="class-method">+ getAssignedUser(): User</text>
+
+  <!-- ============ CHEMICAL CLASS ============ -->
+  <rect x="800" y="120" width="300" height="300" rx="8" class="class-box"/>
+  <rect x="800" y="120" width="300" height="40" rx="8" fill="#01579b"/>
+  <text x="950" y="145" class="class-title" text-anchor="middle" fill="white">Chemical</text>
+  
+  <line x1="800" y1="160" x2="1100" y2="160" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Attributes -->
+  <text x="820" y="185" class="class-attribute">- chemicalId: String</text>
+  <text x="820" y="205" class="class-attribute">- name: String</text>
+  <text x="820" y="225" class="class-attribute">- formula: String</text>
+  <text x="820" y="245" class="class-attribute">- quantity: Float</text>
+  <text x="820" y="265" class="class-attribute">- unit: String</text>
+  <text x="820" y="285" class="class-attribute">- safetyLevel: SafetyLevel</text>
+  <text x="820" y="305" class="class-attribute">- reorderThreshold: Float</text>
+  <text x="820" y="325" class="class-attribute">- expirationDate: Date</text>
+  
+  <line x1="800" y1="340" x2="1100" y2="340" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Methods -->
+  <text x="820" y="365" class="class-method">+ updateQuantity(amount): void</text>
+  <text x="820" y="385" class="class-method">+ checkSafety(): SafetyStatus</text>
+  <text x="820" y="405" class="class-method">+ isExpired(): Boolean</text>
+
+  <!-- ============ CHECK_IN_OUT_RECORD CLASS ============ -->
+  <rect x="1180" y="120" width="300" height="280" rx="8" class="class-box"/>
+  <rect x="1180" y="120" width="300" height="40" rx="8" fill="#01579b"/>
+  <text x="1330" y="145" class="class-title" text-anchor="middle" fill="white">CheckInOutRecord</text>
+  
+  <line x1="1180" y1="160" x2="1480" y2="160" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Attributes -->
+  <text x="1200" y="185" class="class-attribute">- recordId: String</text>
+  <text x="1200" y="205" class="class-attribute">- user: User</text>
+  <text x="1200" y="225" class="class-attribute">- equipment: Equipment</text>
+  <text x="1200" y="245" class="class-attribute">- type: TransactionType</text>
+  <text x="1200" y="265" class="class-attribute">- timestamp: DateTime</text>
+  <text x="1200" y="285" class="class-attribute">- location: String</text>
+  <text x="1200" y="305" class="class-attribute">- notes: String</text>
+  
+  <line x1="1180" y1="320" x2="1480" y2="320" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Methods -->
+  <text x="1200" y="345" class="class-method">+ create(): Boolean</text>
+  <text x="1200" y="365" class="class-method">+ validate(): Boolean</text>
+  <text x="1200" y="385" class="class-method">+ save(): void</text>
+
+  <!-- ============ MAINTENANCE CLASS ============ -->
+  <rect x="420" y="520" width="300" height="320" rx="8" class="class-box"/>
+  <rect x="420" y="520" width="300" height="40" rx="8" fill="#01579b"/>
+  <text x="570" y="545" class="class-title" text-anchor="middle" fill="white">Maintenance</text>
+  
+  <line x1="420" y1="560" x2="720" y2="560" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Attributes -->
+  <text x="440" y="585" class="class-attribute">- maintenanceId: String</text>
+  <text x="440" y="605" class="class-attribute">- equipment: Equipment</text>
+  <text x="440" y="625" class="class-attribute">- technician: User</text>
+  <text x="440" y="645" class="class-attribute">- maintenanceDate: DateTime</text>
+  <text x="440" y="665" class="class-attribute">- nextDueDate: DateTime</text>
+  <text x="440" y="685" class="class-attribute">- maintenanceType: String</text>
+  <text x="440" y="705" class="class-attribute">- description: String</text>
+  <text x="440" y="725" class="class-attribute">- status: MaintenanceStatus</text>
+  
+  <line x1="420" y1="740" x2="720" y2="740" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Methods -->
+  <text x="440" y="765" class="class-method">+ schedule(): void</text>
+  <text x="440" y="785" class="class-method">+ complete(): void</text>
+  <text x="440" y="805" class="class-method">+ calculateCost(): Float</text>
+
+  <!-- ============ DASHBOARD CLASS ============ -->
+  <rect x="800" y="520" width="300" height="280" rx="8" class="class-box"/>
+  <rect x="800" y="520" width="300" height="40" rx="8" fill="#01579b"/>
+  <text x="950" y="545" class="class-title" text-anchor="middle" fill="white">Dashboard</text>
+  
+  <line x1="800" y1="560" x2="1100" y2="560" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Attributes -->
+  <text x="820" y="585" class="class-attribute">- currentUser: User</text>
+  <text x="820" y="605" class="class-attribute">- equipmentList: List&lt;Equipment&gt;</text>
+  <text x="820" y="625" class="class-attribute">- chemicalList: List&lt;Chemical&gt;</text>
+  <text x="820" y="645" class="class-attribute">- recentTransactions: List&lt;CheckInOut&gt;</text>
+  <text x="820" y="665" class="class-attribute">- dashboardData: Map&lt;String, Object&gt;</text>
+  
+  <line x1="800" y1="680" x2="1100" y2="680" stroke="#01579b" stroke-width="1"/>
+  
+  <!-- Methods -->
+  <text x="820" y="705" class="class-method">+ loadData(): void</text>
+  <text x="820" y="725" class="class-method">+ displayCharts(): void</text>
+  <text x="820" y="745" class="class-method">+ refreshData(): void</text>
+  <text x="820" y="765" class="class-method">+ getUserPermissions(): Permission</text>
+
+  <!-- ============ ENUMERATIONS ============ -->
+
+  <!-- UserRole Enum -->
+  <rect x="1180" y="520" width="220" height="180" rx="8" class="class-box"/>
+  <rect x="1180" y="520" width="220" height="40" rx="8" fill="#01579b"/>
+  <text x="1290" y="545" class="class-title" text-anchor="middle" fill="white">&lt;&lt;enumeration&gt;&gt;</text>
+  <text x="1290" y="560" class="class-title" text-anchor="middle" fill="white">UserRole</text>
+  
+  <line x1="1180" y1="575" x2="1400" y2="575" stroke="#01579b" stroke-width="1"/>
+  
+  <text x="1200" y="600" class="class-attribute">ADMIN</text>
+  <text x="1200" y="620" class="class-attribute">LAB_MANAGER</text>
+  <text x="1200" y="640" class="class-attribute">SAFETY_OFFICER</text>
+  <text x="1200" y="660" class="class-attribute">TECHNICIAN</text>
+  <text x="1200" y="680" class="class-attribute">LAB_USER</text>
+
+  <!-- EquipmentStatus Enum -->
+  <rect x="1450" y="520" width="240" height="180" rx="8" class="class-box"/>
+  <rect x="1450" y="520" width="240" height="40" rx="8" fill="#01579b"/>
+  <text x="1570" y="545" class="class-title" text-anchor="middle" fill="white">&lt;&lt;enumeration&gt;&gt;</text>
+  <text x="1570" y="560" class="class-title" text-anchor="middle" fill="white">EquipmentStatus</text>
+  
+  <line x1="1450" y1="575" x2="1690" y2="575" stroke="#01579b" stroke-width="1"/>
+  
+  <text x="1470" y="600" class="class-attribute">AVAILABLE</text>
+  <text x="1470" y="620" class="class-attribute">IN_USE</text>
+  <text x="1470" y="640" class="class-attribute">MAINTENANCE</text>
+  <text x="1470" y="660" class="class-attribute">RETIRED</text>
+
+  <!-- ============ RELATIONSHIPS ============ -->
+
+  <!-- User has many CheckInOutRecord (1:M) -->
+  <path d="M 190 400 L 190 460 L 1330 460 L 1330 400" class="relationship-line" marker-end="url(#association-arrow)"/>
+  <text x="700" y="450" class="relationship-label">creates</text>
+  <text x="160" y="430" class="cardinality">1</text>
+  <text x="1350" y="430" class="cardinality">*</text>
+
+  <!-- Equipment has many Maintenance (1:M) -->
+  <path d="M 570 420 L 570 520" class="composition-line" marker-end="url(#composition-arrow)"/>
+  <text x="550" y="475" class="relationship-label">has</text>
+  <text x="545" y="435" class="cardinality">1</text>
+  <text x="545" y="510" class="cardinality">*</text>
+
+  <!-- Equipment has many CheckInOutRecord (1:M) -->
+  <path d="M 720 270 L 1180 270" class="relationship-line" marker-end="url(#association-arrow)"/>
+  <text x="900" y="260" class="relationship-label">tracked by</text>
+  <text x="690" y="260" class="cardinality">1</text>
+  <text x="1150" y="260" class="cardinality">*</text>
+
+  <!-- Dashboard aggregates User -->
+  <path d="M 800 600 L 330 300" class="aggregation-line" marker-end="url(#aggregation-arrow)"/>
+  <text x="520" y="440" class="relationship-label">uses</text>
+
+  <!-- Dashboard aggregates Equipment -->
+  <path d="M 950 520 L 570 420" class="aggregation-line" marker-end="url(#aggregation-arrow)"/>
+  <text x="710" y="470" class="relationship-label">manages</text>
+
+  <!-- Dashboard aggregates Chemical -->
+  <path d="M 950 520 L 950 420" class="aggregation-line" marker-end="url(#aggregation-arrow)"/>
+  <text x="970" y="470" class="relationship-label">monitors</text>
+
+  <!-- Dashboard aggregates CheckInOutRecord -->
+  <path d="M 1100 600 L 1330 400" class="aggregation-line" marker-end="url(#aggregation-arrow)"/>
+  <text x="1170" y="485" class="relationship-label">views</text>
+
+  <!-- Maintenance references Technician (User) -->
+  <path d="M 420 585 L 330 300" class="relationship-line" marker-end="url(#association-arrow)"/>
+  <text x="320" y="440" class="relationship-label">assigned to</text>
+
+  <!-- ============ LEGEND ============ -->
+  <g>
+    <rect x="50" y="920" width="1700" height="150" rx="8" fill="#fff9c4" stroke="#f57f17" stroke-width="2"/>
+    
+    <text x="70" y="945" class="class-title" fill="#f57f17">Legend & Key Concepts</text>
+    
+    <line x1="70" y1="960" x2="120" y2="960" class="composition-line" marker-end="url(#composition-arrow)"/>
+    <text x="135" y="965" class="subtitle">Composition (Strong aggregation - contains)</text>
+    
+    <line x1="70" y1="985" x2="120" y2="985" class="aggregation-line" marker-end="url(#aggregation-arrow)"/>
+    <text x="135" y="990" class="subtitle">Aggregation (Weak aggregation - uses)</text>
+    
+    <line x1="70" y1="1010" x2="120" y2="1010" class="relationship-line" marker-end="url(#association-arrow)"/>
+    <text x="135" y="1015" class="subtitle">Association (Related to)</text>
+    
+    <text x="750" y="965" class="subtitle">• Cardinality: 1 = One, * = Many, 0..1 = Optional</text>
+    <text x="750" y="990" class="subtitle">• Attributes use "-" prefix (private), "+" prefix (public)</text>
+    <text x="750" y="1015" class="subtitle">• Methods in italics represent abstract or overridden operations</text>
+    
+    <text x="1350" y="965" class="subtitle">• Enumerations: Fixed set of values</text>
+    <text x="1350" y="990" class="subtitle">• Dashboard pattern: Central aggregator component</text>
+    <text x="1350" y="1015" class="subtitle">• All attributes are private; accessed via public methods</text>
+  </g>
+
+  <!-- ============ DESIGN PATTERNS NOTE ============ -->
+  <g>
+    <rect x="50" y="1080" width="1700" height="0" rx="8" fill="none"/>
+    <text x="70" y="1095" class="subtitle" fill="#01579b">Design Patterns Used: MVC (Model-View-Controller with Dashboard as View), Observer (for real-time updates), Repository (for data persistence)</text>
+  </g>
+</svg>

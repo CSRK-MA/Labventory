@@ -1,0 +1,178 @@
+<svg viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define styles -->
+  <defs>
+    <style>
+      .box { fill: #3b82f6; stroke: #1e40af; stroke-width: 2; }
+      .box-text { fill: white; font-size: 16px; font-weight: bold; font-family: Arial, sans-serif; text-anchor: middle; }
+      .dashboard-box { fill: #10b981; stroke: #047857; stroke-width: 2; }
+      .feature-box { fill: #f59e0b; stroke: #d97706; stroke-width: 2; }
+      .feature-box-alt { fill: #8b5cf6; stroke: #6d28d9; stroke-width: 2; }
+      .settings-box { fill: #ef4444; stroke: #b91c1c; stroke-width: 2; }
+      .arrow { stroke: #374151; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .arrow-label { fill: #374151; font-size: 12px; font-family: Arial, sans-serif; }
+      .title { fill: #1f2937; font-size: 28px; font-weight: bold; font-family: Arial, sans-serif; }
+      .legend-label { fill: #1f2937; font-size: 14px; font-family: Arial, sans-serif; }
+    </style>
+    
+    <!-- Arrow marker -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#374151" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#f9fafb"/>
+
+  <!-- Title -->
+  <text x="700" y="40" class="title">EduTrack Navigation Flow</text>
+
+  <!-- Login Box -->
+  <rect x="550" y="80" width="200" height="80" rx="10" class="box"/>
+  <text x="650" y="125" class="box-text">Login/SignIn</text>
+
+  <!-- Arrow Login to Dashboard -->
+  <path d="M 650 160 L 650 220" class="arrow"/>
+  <text x="670" y="195" class="arrow-label">Authenticate</text>
+
+  <!-- Dashboard Box -->
+  <rect x="500" y="220" width="300" height="80" rx="10" class="dashboard-box"/>
+  <text x="650" y="265" class="box-text">Main Dashboard</text>
+
+  <!-- Arrows from Dashboard to Features (row 1) -->
+  <path d="M 550 300 L 150 370" class="arrow"/>
+  <path d="M 630 300 L 400 370" class="arrow"/>
+  <path d="M 670 300 L 900 370" class="arrow"/>
+  <path d="M 750 300 L 1250 370" class="arrow"/>
+
+  <!-- Row 1: Feature Boxes (Top Features) -->
+  <!-- Check-In/Out -->
+  <rect x="30" y="370" width="240" height="100" rx="10" class="feature-box"/>
+  <text x="150" y="410" class="box-text">Check-In/Out</text>
+  <text x="150" y="435" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">QR Scanner</text>
+  <text x="150" y="455" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">Status Tracking</text>
+
+  <!-- Equipment Management -->
+  <rect x="310" y="370" width="240" height="100" rx="10" class="feature-box"/>
+  <text x="430" y="410" class="box-text">Equipment Mgmt</text>
+  <text x="430" y="435" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">View/Edit</text>
+  <text x="430" y="455" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">Maintenance</text>
+
+  <!-- Chemical Tracking -->
+  <rect x="780" y="370" width="240" height="100" rx="10" class="feature-box"/>
+  <text x="900" y="410" class="box-text">Chemical Tracking</text>
+  <text x="900" y="435" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">Inventory</text>
+  <text x="900" y="455" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">Usage Logs</text>
+
+  <!-- Reports -->
+  <rect x="1060" y="370" width="240" height="100" rx="10" class="feature-box-alt"/>
+  <text x="1180" y="410" class="box-text">Reports</text>
+  <text x="1180" y="435" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">Generate</text>
+  <text x="1180" y="455" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">Export Data</text>
+
+  <!-- Arrows from Features to Sub-screens -->
+  <!-- Check-In/Out sub-screens -->
+  <path d="M 150 470 L 150 540" class="arrow"/>
+  
+  <!-- Equipment Management sub-screens -->
+  <path d="M 430 470 L 350 540" class="arrow"/>
+  <path d="M 430 470 L 510 540" class="arrow"/>
+
+  <!-- Chemical Tracking sub-screens -->
+  <path d="M 900 470 L 820 540" class="arrow"/>
+  <path d="M 900 470 L 980 540" class="arrow"/>
+
+  <!-- Reports sub-screens -->
+  <path d="M 1180 470 L 1100 540" class="arrow"/>
+  <path d="M 1180 470 L 1260 540" class="arrow"/>
+
+  <!-- Sub-screens Row -->
+  <!-- QR Scanner -->
+  <rect x="80" y="540" width="140" height="70" rx="8" style="fill: #fbbf24; stroke: #d97706; stroke-width: 1;"/>
+  <text x="150" y="575" class="box-text" style="fill: #1f2937; font-size: 14px;">QR Scanner</text>
+
+  <!-- Equipment List -->
+  <rect x="280" y="540" width="140" height="70" rx="8" style="fill: #fbbf24; stroke: #d97706; stroke-width: 1;"/>
+  <text x="350" y="575" class="box-text" style="fill: #1f2937; font-size: 14px;">Equipment List</text>
+
+  <!-- Maintenance Schedule -->
+  <rect x="440" y="540" width="140" height="70" rx="8" style="fill: #fbbf24; stroke: #d97706; stroke-width: 1;"/>
+  <text x="510" y="575" class="box-text" style="fill: #1f2937; font-size: 14px;">Maintenance</text>
+
+  <!-- Stock Levels -->
+  <rect x="770" y="540" width="140" height="70" rx="8" style="fill: #fbbf24; stroke: #d97706; stroke-width: 1;"/>
+  <text x="840" y="575" class="box-text" style="fill: #1f2937; font-size: 14px;">Stock Levels</text>
+
+  <!-- Usage Logs -->
+  <rect x="930" y="540" width="140" height="70" rx="8" style="fill: #fbbf24; stroke: #d97706; stroke-width: 1;"/>
+  <text x="1000" y="575" class="box-text" style="fill: #1f2937; font-size: 14px;">Usage Logs</text>
+
+  <!-- Equipment Report -->
+  <rect x="1050" y="540" width="140" height="70" rx="8" style="fill: #a78bfa; stroke: #6d28d9; stroke-width: 1;"/>
+  <text x="1120" y="570" class="box-text" style="fill: white; font-size: 12px;">Equipment</text>
+  <text x="1120" y="585" class="box-text" style="fill: white; font-size: 12px;">Report</text>
+
+  <!-- Chemical Report -->
+  <rect x="1210" y="540" width="140" height="70" rx="8" style="fill: #a78bfa; stroke: #6d28d9; stroke-width: 1;"/>
+  <text x="1280" y="570" class="box-text" style="fill: white; font-size: 12px;">Chemical</text>
+  <text x="1280" y="585" class="box-text" style="fill: white; font-size: 12px;">Report</text>
+
+  <!-- Settings & Admin Section -->
+  <!-- Arrows from Dashboard to Settings/Admin (bottom) -->
+  <path d="M 500 300 L 300 700" class="arrow"/>
+  <path d="M 800 300 L 1000 700" class="arrow"/>
+
+  <!-- Settings -->
+  <rect x="150" y="700" width="200" height="80" rx="10" class="settings-box"/>
+  <text x="250" y="745" class="box-text">Settings</text>
+
+  <!-- User Management -->
+  <rect x="900" y="700" width="200" height="80" rx="10" class="settings-box"/>
+  <text x="1000" y="735" class="box-text">User Management</text>
+  <text x="1000" y="755" style="fill: white; font-size: 12px; font-family: Arial, sans-serif; text-anchor: middle;">(Admin Only)</text>
+
+  <!-- Sub-settings -->
+  <path d="M 250 700 L 200 820" class="arrow"/>
+  <path d="M 250 700 L 300 820" class="arrow"/>
+
+  <!-- Profile Settings -->
+  <rect x="130" y="820" width="140" height="60" rx="8" style="fill: #fca5a5; stroke: #991b1b; stroke-width: 1;"/>
+  <text x="200" y="855" class="box-text" style="fill: #1f2937; font-size: 12px;">Profile</text>
+
+  <!-- Preferences -->
+  <rect x="290" y="820" width="140" height="60" rx="8" style="fill: #fca5a5; stroke: #991b1b; stroke-width: 1;"/>
+  <text x="360" y="855" class="box-text" style="fill: #1f2937; font-size: 12px;">Preferences</text>
+
+  <!-- User Admin -->
+  <path d="M 1000 700 L 950 820" class="arrow"/>
+  <path d="M 1000 700 L 1050 820" class="arrow"/>
+
+  <!-- Create/Edit Users -->
+  <rect x="880" y="820" width="140" height="60" rx="8" style="fill: #fca5a5; stroke: #991b1b; stroke-width: 1;"/>
+  <text x="950" y="850" class="box-text" style="fill: #1f2937; font-size: 11px;">Create/Edit</text>
+  <text x="950" y="865" class="box-text" style="fill: #1f2937; font-size: 11px;">Users</text>
+
+  <!-- Role Management -->
+  <rect x="1040" y="820" width="140" height="60" rx="8" style="fill: #fca5a5; stroke: #991b1b; stroke-width: 1;"/>
+  <text x="1110" y="850" class="box-text" style="fill: #1f2937; font-size: 11px;">Role Mgmt</text>
+  <text x="1110" y="865" class="box-text" style="fill: #1f2937; font-size: 11px;">Permissions</text>
+
+  <!-- Legend -->
+  <g>
+    <text x="50" y="85" class="legend-label" style="font-weight: bold;">Legend:</text>
+    
+    <rect x="50" y="100" width="20" height="20" rx="3" class="box"/>
+    <text x="80" y="115" class="legend-label">Authentication</text>
+
+    <rect x="250" y="100" width="20" height="20" rx="3" class="dashboard-box"/>
+    <text x="280" y="115" class="legend-label">Main Screen</text>
+
+    <rect x="450" y="100" width="20" height="20" rx="3" class="feature-box"/>
+    <text x="480" y="115" class="legend-label">Core Features</text>
+
+    <rect x="650" y="100" width="20" height="20" rx="3" class="feature-box-alt"/>
+    <text x="680" y="115" class="legend-label">Reports</text>
+
+    <rect x="800" y="100" width="20" height="20" rx="3" class="settings-box"/>
+    <text x="830" y="115" class="legend-label">Settings/Admin</text>
+  </g>
+</svg>

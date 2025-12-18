@@ -1,28 +1,93 @@
-import { useState } from "react";
-import { FileText, Download, Calendar, TrendingUp } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { useState, useCallback } from "react";
+import { FileText, Download, Calendar, TrendingUp, Loader } from "lucide-react";
+import { toast } from "sonner";
+import {
+  generateEquipmentUsageReport,
+  generateChemicalInventoryReport,
+  generateCheckInOutReport,
+  generateMaintenanceReport,
+  exportReportAsPDF,
+  exportReportAsCSV,
+} from "../../services/reportService";
 
 export function Reports() {
-  const [reportType, setReportType] = useState("Equipment Usage");
+  const [reportType, setReportType] = useState("Equipment Usage Report");
   const [dateRange, setDateRange] = useState("Last 30 Days");
   const [format, setFormat] = useState("PDF");
-
-  const reports = [
+  const [filterLocation, setFilterLocation] = useState("");
+  const [includeHidden, setIncludeHidden] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [recentReports, setRecentReports] = useState([
     { name: "Equipment Usage Report", date: "November 2024", size: "245 KB" },
     { name: "Chemical Inventory Report", date: "November 2024", size: "189 KB" },
     { name: "Maintenance Summary", date: "November 2024", size: "156 KB" },
     { name: "Check-in/Out Logs", date: "November 2024", size: "312 KB" }
-  ];
+  ]);
 
-  const handleGenerateReport = () => {
-    toast.success(`Generating ${reportType} report as ${format}...`);
-    setTimeout(() => {
-      toast.success(`${reportType} report generated successfully!`);
-    }, 1500);
-  };
+  const handleGenerateReport = useCallback(async () => {
+    setIsGenerating(true);
+    try {
+      let reportData;
+      
+      switch (reportType) {
+        case "Equipment Usage Report":
+          reportData = await generateEquipmentUsageReport(
+            includeHidden,
+            filterLocation || undefined
+          );
+          break;
+        case "Chemical Inventory Report":
+          reportData = await generateChemicalInventoryReport();
+          break;
+        case "Check-in/Out Logs":
+          reportData = await generateCheckInOutReport();
+          break;
+        case "Maintenance Summary":
+          reportData = await generateMaintenanceReport();
+          break;
+        default:
+          reportData = await generateEquipmentUsageReport();
+      }
+
+      if (format === "PDF") {
+        const result = await exportReportAsPDF(reportData, reportType);
+        if (result.success) {
+          toast.success(`✅ ${reportType} generated successfully!`);
+          // Add to recent reports
+          const newReport = {
+            name: reportType,
+            date: new Date().toLocaleDateString(),
+            size: "Generated"
+          };
+          setRecentReports([newReport, ...recentReports.slice(0, 3)]);
+        } else {
+          toast.error("Failed to generate PDF report");
+        }
+      } else if (format === "CSV") {
+        const result = exportReportAsCSV(reportData, reportType);
+        if (result.success) {
+          toast.success(`✅ ${reportType} exported as CSV successfully!`);
+          // Add to recent reports
+          const newReport = {
+            name: reportType,
+            date: new Date().toLocaleDateString(),
+            size: "Generated"
+          };
+          setRecentReports([newReport, ...recentReports.slice(0, 3)]);
+        } else {
+          toast.error("Failed to export CSV report");
+        }
+      }
+    } catch (error) {
+      console.error("Error generating report:", error);
+      toast.error("An error occurred while generating the report");
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [reportType, format, filterLocation, includeHidden, recentReports]);
 
   const handleDownloadReport = (reportName: string) => {
-    toast.success(`Downloading ${reportName}...`);
+    toast.info(`Downloading ${reportName}...`);
   };
 
   return (
@@ -60,11 +125,10 @@ export function Reports() {
               onChange={(e) => setReportType(e.target.value)}
               className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
-              <option>Equipment Usage</option>
-              <option>Chemical Inventory</option>
+              <option>Equipment Usage Report</option>
+              <option>Chemical Inventory Report</option>
               <option>Maintenance Summary</option>
               <option>Check-in/Out Logs</option>
-              <option>User Activity</option>
             </select>
           </div>
           <div>
@@ -81,6 +145,34 @@ export function Reports() {
               <option>Custom Range</option>
             </select>
           </div>
+          {reportType === "Equipment Usage Report" && (
+            <>
+              <div>
+                <label className="block text-sm text-gray-700 mb-2">Filter by Location (Optional)</label>
+                <input 
+                  type="text"
+                  placeholder="e.g., Room 101, Lab A"
+                  value={filterLocation}
+                  onChange={(e) => setFilterLocation(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-2">Include Hidden Equipment</label>
+                <div className="flex items-center gap-3 h-12">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox"
+                      checked={includeHidden}
+                      onChange={(e) => setIncludeHidden(e.target.checked)}
+                      className="w-5 h-5 border border-gray-300 rounded"
+                    />
+                    <span className="text-gray-700">Show hidden from reports</span>
+                  </label>
+                </div>
+              </div>
+            </>
+          )}
           <div>
             <label className="block text-sm text-gray-700 mb-2">Format</label>
             <div className="flex gap-3">
@@ -113,9 +205,17 @@ export function Reports() {
           <div className="flex items-end">
             <button 
               onClick={handleGenerateReport}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
+              disabled={isGenerating}
+              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Generate Report
+              {isGenerating ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                "Generate Report"
+              )}
             </button>
           </div>
         </div>
@@ -126,7 +226,7 @@ export function Reports() {
           <h2 className="text-xl text-gray-900">Recent Reports</h2>
         </div>
         <div className="divide-y divide-gray-200">
-          {reports.map((report, index) => (
+          {recentReports.map((report, index) => (
             <div key={index} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">

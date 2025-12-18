@@ -11,6 +11,10 @@ import {
 import { useUser } from "../../contexts/UserContext";
 import { PermissionGuard } from "../PermissionGuard";
 import { hasPermission } from "../../services/userService";
+import {
+  checkChemicalDuplicate,
+  updateExistingChemical
+} from "../../services/duplicateDetection";
 
 export function ChemicalTracker() {
   const [chemicals, setChemicals] = useState<Chemical[]>([]);
@@ -19,6 +23,9 @@ export function ChemicalTracker() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedChemical, setSelectedChemical] = useState<Chemical | null>(null);
+  const [duplicateError, setDuplicateError] = useState<any>(null);
+  const [showUpdateOption, setShowUpdateOption] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Chemical>>({
     name: "",
     formula: "",
@@ -130,17 +137,71 @@ export function ChemicalTracker() {
       return;
     }
 
-    const result = await addChemicalToDb({
-      ...formData,
-      expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : undefined
-    } as Chemical);
+    setIsLoading(true);
+    setDuplicateError(null);
+    setShowUpdateOption(false);
 
-    if (result.success) {
-      toast.success("Chemical added successfully!");
-      setShowAddModal(false);
-      resetForm();
-    } else {
-      toast.error("Failed to add chemical");
+    try {
+      // Check for duplicates
+      const duplicateCheck = await checkChemicalDuplicate(
+        formData.name || "",
+        formData.formula || ""
+      );
+
+      if (duplicateCheck.isDuplicate) {
+        // Show duplicate error with update option
+        setDuplicateError(duplicateCheck);
+        setShowUpdateOption(true);
+        setIsLoading(false);
+        return;
+      }
+
+      // No duplicate - proceed with adding
+      const result = await addChemicalToDb({
+        ...formData,
+        expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : undefined
+      } as Chemical);
+
+      if (result.success) {
+        toast.success("Chemical added successfully!");
+        setShowAddModal(false);
+        resetForm();
+      } else {
+        toast.error("Failed to add chemical");
+      }
+    } catch (error) {
+      toast.error("Error checking for duplicate chemical");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateExistingChemical = async () => {
+    if (!duplicateError?.existingId) {
+      toast.error("Unable to update: Could not identify existing record");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await updateExistingChemical(duplicateError.existingId, {
+        ...formData,
+        expiryDate: formData.expiryDate ? new Date(formData.expiryDate) : undefined
+      });
+
+      if (result.success) {
+        toast.success(result.message);
+        setShowAddModal(false);
+        setDuplicateError(null);
+        setShowUpdateOption(false);
+        resetForm();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("Error updating chemical");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -481,19 +542,68 @@ export function ChemicalTracker() {
                 />
               </div>
             </div>
+
+            {/* Duplicate Error Alert */}
+            {duplicateError && showUpdateOption && (
+              <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <p className="text-red-800 font-semibold">⚠️ Duplicate Chemical Found</p>
+                    <p className="text-red-700 text-sm mt-1">{duplicateError.message}</p>
+                    {duplicateError.existingData && (
+                      <div className="mt-3 text-sm text-red-600 bg-red-100 p-3 rounded">
+                        <p><strong>Existing Chemical:</strong></p>
+                        <p>Formula: {duplicateError.existingData.formula}</p>
+                        <p>Quantity: {duplicateError.existingData.quantity} {duplicateError.existingData.unit}</p>
+                        <p>Location: {duplicateError.existingData.location}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => { setShowAddModal(false); setShowEditModal(false); resetForm(); }}
+                onClick={() => { 
+                  setShowAddModal(false); 
+                  setShowEditModal(false);
+                  setDuplicateError(null);
+                  setShowUpdateOption(false);
+                  resetForm(); 
+                }}
                 className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 Cancel
               </button>
-              <button
-                onClick={showAddModal ? handleAddChemical : handleEditChemical}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
-              >
-                {showAddModal ? "Add Chemical" : "Save Changes"}
-              </button>
+              {showUpdateOption && duplicateError ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setDuplicateError(null);
+                      setShowUpdateOption(false);
+                    }}
+                    className="flex-1 px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                  >
+                    Create Anyway
+                  </button>
+                  <button
+                    onClick={handleUpdateExistingChemical}
+                    disabled={isLoading}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                  >
+                    {isLoading ? "Updating..." : "Update Existing"}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={showAddModal ? handleAddChemical : handleEditChemical}
+                  disabled={isLoading}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                >
+                  {isLoading ? "Checking..." : (showAddModal ? "Add Chemical" : "Save Changes")}
+                </button>
+              )}
             </div>
           </div>
         </div>

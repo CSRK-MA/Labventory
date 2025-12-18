@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, QrCode, Edit, Trash2, Eye, X } from "lucide-react";
+import { Search, Plus, QrCode, Edit, Trash2, Eye, EyeOff, X } from "lucide-react";
 import { toast } from "sonner";
 import QRCode from "react-qr-code";
 import { useUser } from "../../contexts/UserContext";
@@ -12,6 +12,10 @@ import {
   deleteEquipment as deleteEquipmentFromDb,
   Equipment 
 } from "../../services/firebaseService";
+import { 
+  checkEquipmentDuplicate, 
+  updateExistingEquipment 
+} from "../../services/duplicateDetection";
 
 export function EquipmentList() {
   const [equipment, setEquipment] = useState<Equipment[]>([]);
@@ -24,6 +28,9 @@ export function EquipmentList() {
   const [showQRModal, setShowQRModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null);
+  const [duplicateError, setDuplicateError] = useState<any>(null);
+  const [showUpdateOption, setShowUpdateOption] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Equipment>>({
     name: "",
     category: "",
@@ -76,13 +83,60 @@ export function EquipmentList() {
       return;
     }
     
-    const result = await addEquipmentToDb(formData as Equipment);
-    if (result.success) {
-      toast.success("Equipment added successfully!");
-      setShowAddModal(false);
-      resetForm();
-    } else {
-      toast.error("Failed to add equipment");
+    setIsLoading(true);
+    setDuplicateError(null);
+    setShowUpdateOption(false);
+
+    try {
+      // Check for duplicates
+      const duplicateCheck = await checkEquipmentDuplicate(formData.name || "");
+      
+      if (duplicateCheck.isDuplicate) {
+        // Show duplicate error with update option
+        setDuplicateError(duplicateCheck);
+        setShowUpdateOption(true);
+        setIsLoading(false);
+        return;
+      }
+
+      // No duplicate - proceed with adding
+      const result = await addEquipmentToDb(formData as Equipment);
+      if (result.success) {
+        toast.success("Equipment added successfully!");
+        setShowAddModal(false);
+        resetForm();
+      } else {
+        toast.error("Failed to add equipment");
+      }
+    } catch (error) {
+      toast.error("Error checking for duplicate equipment");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateExistingEquipment = async () => {
+    if (!duplicateError?.existingId) {
+      toast.error("Unable to update: Could not identify existing record");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await updateExistingEquipment(duplicateError.existingId, formData);
+      if (result.success) {
+        toast.success(result.message);
+        setShowAddModal(false);
+        setDuplicateError(null);
+        setShowUpdateOption(false);
+        resetForm();
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error("Error updating equipment");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -121,6 +175,21 @@ export function EquipmentList() {
   const openViewModal = (item: Equipment) => {
     setSelectedEquipment(item);
     setShowViewModal(true);
+  };
+
+  const handleToggleHideFromReports = async () => {
+    if (selectedEquipment && selectedEquipment.id) {
+      const newValue = !selectedEquipment.hideFromReports;
+      const result = await updateEquipmentInDb(selectedEquipment.id, {
+        hideFromReports: newValue
+      });
+      if (result.success) {
+        toast.success(newValue ? "Equipment hidden from reports" : "Equipment visible in reports");
+        setSelectedEquipment({ ...selectedEquipment, hideFromReports: newValue });
+      } else {
+        toast.error("Failed to update equipment visibility");
+      }
+    }
   };
 
   const openQRModal = (item: Equipment) => {
@@ -412,19 +481,67 @@ export function EquipmentList() {
                 />
               </div>
             </div>
+
+            {/* Duplicate Error Alert */}
+            {duplicateError && showUpdateOption && (
+              <div className="mt-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                <div className="flex gap-3">
+                  <div className="flex-1">
+                    <p className="text-red-800 font-semibold">⚠️ Duplicate Equipment Found</p>
+                    <p className="text-red-700 text-sm mt-1">{duplicateError.message}</p>
+                    {duplicateError.existingData && (
+                      <div className="mt-3 text-sm text-red-600 bg-red-100 p-3 rounded">
+                        <p><strong>Existing Equipment:</strong></p>
+                        <p>Location: {duplicateError.existingData.location}</p>
+                        <p>Quantity: {duplicateError.existingData.quantity}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => { setShowAddModal(false); setShowEditModal(false); resetForm(); }}
+                onClick={() => { 
+                  setShowAddModal(false); 
+                  setShowEditModal(false); 
+                  setDuplicateError(null);
+                  setShowUpdateOption(false);
+                  resetForm(); 
+                }}
                 className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 Cancel
               </button>
-              <button
-                onClick={showAddModal ? handleAddEquipment : handleEditEquipment}
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
-              >
-                {showAddModal ? "Add Equipment" : "Save Changes"}
-              </button>
+              {showUpdateOption && duplicateError ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setDuplicateError(null);
+                      setShowUpdateOption(false);
+                    }}
+                    className="flex-1 px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                  >
+                    Create Anyway
+                  </button>
+                  <button
+                    onClick={handleUpdateExistingEquipment}
+                    disabled={isLoading}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                  >
+                    {isLoading ? "Updating..." : "Update Existing"}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={showAddModal ? handleAddEquipment : handleEditEquipment}
+                  disabled={isLoading}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                >
+                  {isLoading ? "Checking..." : (showAddModal ? "Add Equipment" : "Save Changes")}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -467,6 +584,37 @@ export function EquipmentList() {
                 <div>
                   <p className="text-sm text-gray-600">Condition</p>
                   <p className="text-gray-900">{selectedEquipment.condition || "N/A"}</p>
+                </div>
+              </div>
+
+              {/* Hide from Reports Toggle */}
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {selectedEquipment.hideFromReports ? (
+                      <EyeOff className="w-5 h-5 text-red-500" />
+                    ) : (
+                      <Eye className="w-5 h-5 text-green-500" />
+                    )}
+                    <div>
+                      <p className="font-semibold text-gray-900">Report Visibility</p>
+                      <p className="text-sm text-gray-600">
+                        {selectedEquipment.hideFromReports 
+                          ? "Hidden from reports (but can still update quantity)" 
+                          : "Visible in reports"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleToggleHideFromReports}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      selectedEquipment.hideFromReports
+                        ? "bg-red-100 text-red-700 hover:bg-red-200"
+                        : "bg-green-100 text-green-700 hover:bg-green-200"
+                    }`}
+                  >
+                    {selectedEquipment.hideFromReports ? "Show in Reports" : "Hide from Reports"}
+                  </button>
                 </div>
               </div>
             </div>

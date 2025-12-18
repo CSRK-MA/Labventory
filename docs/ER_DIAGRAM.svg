@@ -1,0 +1,167 @@
+<svg viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define styles -->
+  <defs>
+    <style>
+      .entity-box { fill: #e3f2fd; stroke: #1976d2; stroke-width: 2; }
+      .entity-title { fill: #1565c0; font-size: 16px; font-weight: bold; font-family: Arial, sans-serif; }
+      .entity-field { fill: #424242; font-size: 13px; font-family: Arial, sans-serif; }
+      .pk-field { fill: #d32f2f; font-size: 13px; font-weight: bold; font-family: Arial, sans-serif; }
+      .fk-field { fill: #0097a7; font-size: 13px; font-family: Arial, sans-serif; }
+      .relationship-line { stroke: #424242; stroke-width: 2; fill: none; }
+      .relationship-label { fill: #424242; font-size: 12px; font-family: Arial, sans-serif; font-weight: bold; }
+      .cardinality { fill: #424242; font-size: 11px; font-family: Arial, sans-serif; }
+      .title { fill: #1a237e; font-size: 32px; font-weight: bold; font-family: Arial, sans-serif; }
+      .subtitle { fill: #424242; font-size: 14px; font-family: Arial, sans-serif; }
+      .legend-title { fill: #1565c0; font-size: 14px; font-weight: bold; font-family: Arial, sans-serif; }
+      .legend-text { fill: #424242; font-size: 12px; font-family: Arial, sans-serif; }
+    </style>
+
+    <!-- Arrow marker for crow's foot notation -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#424242" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1600" height="1000" fill="#fafafa"/>
+
+  <!-- Title -->
+  <text x="800" y="50" class="title" text-anchor="middle">EduTrack Entity-Relationship Diagram</text>
+  <text x="800" y="75" class="subtitle" text-anchor="middle">Database Schema & Entity Relationships</text>
+
+  <!-- ============ USERS ENTITY ============ -->
+  <rect x="50" y="150" width="280" height="240" rx="8" class="entity-box"/>
+  <rect x="50" y="150" width="280" height="40" rx="8" fill="#1976d2"/>
+  <text x="190" y="175" class="entity-title" text-anchor="middle" fill="white">USERS</text>
+  
+  <line x1="50" y1="190" x2="330" y2="190" stroke="#1976d2" stroke-width="1"/>
+  
+  <text x="70" y="215" class="pk-field">PK userId (VARCHAR)</text>
+  <text x="70" y="240" class="entity-field">name (VARCHAR)</text>
+  <text x="70" y="265" class="entity-field">email (VARCHAR, UNIQUE)</text>
+  <text x="70" y="290" class="entity-field">password (VARCHAR)</text>
+  <text x="70" y="315" class="entity-field">role (ENUM)</text>
+  <text x="70" y="340" class="entity-field">department (VARCHAR)</text>
+  <text x="70" y="365" class="entity-field">createdAt (TIMESTAMP)</text>
+
+  <!-- ============ EQUIPMENT ENTITY ============ -->
+  <rect x="450" y="150" width="300" height="240" rx="8" class="entity-box"/>
+  <rect x="450" y="150" width="300" height="40" rx="8" fill="#1976d2"/>
+  <text x="600" y="175" class="entity-title" text-anchor="middle" fill="white">EQUIPMENT</text>
+  
+  <line x1="450" y1="190" x2="750" y2="190" stroke="#1976d2" stroke-width="1"/>
+  
+  <text x="470" y="215" class="pk-field">PK equipmentId (VARCHAR)</text>
+  <text x="470" y="240" class="entity-field">name (VARCHAR)</text>
+  <text x="470" y="265" class="entity-field">category (VARCHAR)</text>
+  <text x="470" y="290" class="entity-field">status (ENUM)</text>
+  <text x="470" y="315" class="entity-field">location (VARCHAR)</text>
+  <text x="470" y="340" class="fk-field">assignedTo (FK → Users)</text>
+  <text x="470" y="365" class="entity-field">lastMaintenance (DATE)</text>
+
+  <!-- ============ CHEMICALS ENTITY ============ -->
+  <rect x="900" y="150" width="300" height="240" rx="8" class="entity-box"/>
+  <rect x="900" y="150" width="300" height="40" rx="8" fill="#1976d2"/>
+  <text x="1050" y="175" class="entity-title" text-anchor="middle" fill="white">CHEMICALS</text>
+  
+  <line x1="900" y1="190" x2="1200" y2="190" stroke="#1976d2" stroke-width="1"/>
+  
+  <text x="920" y="215" class="pk-field">PK chemicalId (VARCHAR)</text>
+  <text x="920" y="240" class="entity-field">name (VARCHAR)</text>
+  <text x="920" y="265" class="entity-field">formula (VARCHAR)</text>
+  <text x="920" y="290" class="entity-field">quantity (FLOAT)</text>
+  <text x="920" y="315" class="entity-field">unit (VARCHAR)</text>
+  <text x="920" y="340" class="entity-field">safetyLevel (ENUM)</text>
+  <text x="920" y="365" class="entity-field">location (VARCHAR)</text>
+
+  <!-- ============ CHECK-IN/OUT ENTITY ============ -->
+  <rect x="1300" y="150" width="280" height="240" rx="8" class="entity-box"/>
+  <rect x="1300" y="150" width="280" height="40" rx="8" fill="#1976d2"/>
+  <text x="1440" y="175" class="entity-title" text-anchor="middle" fill="white">CHECK_IN_OUT</text>
+  
+  <line x1="1300" y1="190" x2="1580" y2="190" stroke="#1976d2" stroke-width="1"/>
+  
+  <text x="1320" y="215" class="pk-field">PK recordId (VARCHAR)</text>
+  <text x="1320" y="240" class="fk-field">FK userId (→ Users)</text>
+  <text x="1320" y="265" class="fk-field">FK equipmentId (→ Equipment)</text>
+  <text x="1320" y="290" class="entity-field">type (ENUM)</text>
+  <text x="1320" y="315" class="entity-field">timestamp (TIMESTAMP)</text>
+  <text x="1320" y="340" class="entity-field">location (VARCHAR)</text>
+
+  <!-- ============ MAINTENANCE ENTITY ============ -->
+  <rect x="450" y="550" width="300" height="240" rx="8" class="entity-box"/>
+  <rect x="450" y="550" width="300" height="40" rx="8" fill="#1976d2"/>
+  <text x="600" y="575" class="entity-title" text-anchor="middle" fill="white">MAINTENANCE</text>
+  
+  <line x1="450" y1="590" x2="750" y2="590" stroke="#1976d2" stroke-width="1"/>
+  
+  <text x="470" y="615" class="pk-field">PK maintenanceId (VARCHAR)</text>
+  <text x="470" y="640" class="fk-field">FK equipmentId (→ Equipment)</text>
+  <text x="470" y="665" class="fk-field">FK technician (→ Users)</text>
+  <text x="470" y="690" class="entity-field">maintenanceDate (DATE)</text>
+  <text x="470" y="715" class="entity-field">nextDueDate (DATE)</text>
+  <text x="470" y="740" class="entity-field">description (TEXT)</text>
+
+  <!-- ============ EQUIPMENT_USERS (JUNCTION) ENTITY ============ -->
+  <rect x="900" y="550" width="300" height="200" rx="8" class="entity-box"/>
+  <rect x="900" y="550" width="300" height="40" rx="8" fill="#1976d2"/>
+  <text x="1050" y="575" class="entity-title" text-anchor="middle" fill="white">EQUIPMENT_USERS</text>
+  
+  <line x1="900" y1="590" x2="1200" y2="590" stroke="#1976d2" stroke-width="1"/>
+  
+  <text x="920" y="615" class="pk-field">PK equipmentUserId (VARCHAR)</text>
+  <text x="920" y="640" class="fk-field">FK equipmentId (→ Equipment)</text>
+  <text x="920" y="665" class="fk-field">FK userId (→ Users)</text>
+  <text x="920" y="690" class="entity-field">assignmentDate (DATE)</text>
+
+  <!-- ============ RELATIONSHIPS ============ -->
+  
+  <!-- Relationship 1: Users (1) → CheckInOut (M) -->
+  <path d="M 190 390 Q 190 450 1440 390" class="relationship-line" marker-end="url(#arrowhead)"/>
+  <text x="700" y="440" class="relationship-label">1:M</text>
+  <text x="750" y="460" class="relationship-label">creates</text>
+
+  <!-- Relationship 2: Equipment (1) → Maintenance (M) -->
+  <path d="M 600 390 L 600 550" class="relationship-line" marker-end="url(#arrowhead)"/>
+  <text x="620" y="475" class="relationship-label">1:M</text>
+
+  <!-- Relationship 3: Users (1) → Maintenance (M) - Technician -->
+  <path d="M 330 300 Q 380 400 470 615" class="relationship-line" marker-end="url(#arrowhead)"/>
+  <text x="350" y="460" class="relationship-label">assigned to</text>
+
+  <!-- Relationship 4: Equipment (M) ← EQUIPMENT_USERS (M) → Users (M) -->
+  <!-- Equipment to Equipment_Users -->
+  <path d="M 600 390 L 900 600" class="relationship-line" marker-end="url(#arrowhead)"/>
+  <text x="720" y="480" class="relationship-label">M:M</text>
+
+  <!-- Equipment_Users to Users -->
+  <path d="M 900 650 Q 500 600 330 300" class="relationship-line" marker-end="url(#arrowhead)"/>
+
+  <!-- Relationship 5: Equipment → CheckInOut (1:M) -->
+  <path d="M 750 270 L 1300 270" class="relationship-line" marker-end="url(#arrowhead)"/>
+  <text x="1000" y="260" class="relationship-label">1:M</text>
+
+  <!-- ============ LEGEND ============ -->
+  <g>
+    <rect x="50" y="850" width="500" height="120" rx="8" fill="#fff3e0" stroke="#ff9800" stroke-width="1"/>
+    <text x="70" y="875" class="legend-title">Legend</text>
+    
+    <text x="70" y="905" class="legend-text">● PK (Primary Key)</text>
+    <text x="70" y="930" class="legend-text">● FK (Foreign Key)</text>
+    <text x="70" y="955" class="legend-text">● 1:M (One-to-Many) | M:M (Many-to-Many)</text>
+    
+    <text x="300" y="905" class="legend-text">● ENUM: role, status, type</text>
+    <text x="300" y="930" class="legend-text">● TIMESTAMP: includes date & time</text>
+    <text x="300" y="955" class="legend-text">● UNIQUE: email addresses must be unique</text>
+  </g>
+
+  <!-- ============ KEY NOTES ============ -->
+  <g>
+    <rect x="600" y="850" width="950" height="120" rx="8" fill="#f3e5f5" stroke="#9c27b0" stroke-width="1"/>
+    <text x="620" y="875" class="legend-title">Key Relationships & Constraints</text>
+    
+    <text x="620" y="905" class="legend-text">• Users → CheckInOut (1:M): One user can create many check-in/out records</text>
+    <text x="620" y="930" class="legend-text">• Equipment → Maintenance (1:M): One equipment has multiple maintenance records</text>
+    <text x="620" y="955" class="legend-text">• Users ↔ Equipment (M:M via junction table): Users can be assigned to multiple equipment, equipment can be assigned to multiple users</text>
+  </g>
+</svg>

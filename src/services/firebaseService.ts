@@ -24,6 +24,7 @@ export interface Equipment {
   purchaseDate?: Date;
   lastMaintenance?: Date;
   createdAt?: Date;
+  hideFromReports?: boolean; // Hide from reports but keep for tracking
 }
 
 // Chemical Types

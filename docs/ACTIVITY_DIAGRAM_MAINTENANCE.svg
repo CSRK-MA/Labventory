@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500">
+  <style>
+    .box { fill: #fffefc; stroke: #285e61; stroke-width:1.6; rx:6; }
+    .start { fill: #2f855a; }
+    .end { fill: #2b6cb0; }
+    .arrow { stroke: #2b6cb0; fill: none; stroke-width:1.6; marker-end: url(#arrowhead); }
+    .label { font:13px sans-serif; fill:#111 }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2b6cb0" />
+    </marker>
+  </defs>
+
+  <!-- Start -->
+  <circle cx="80" cy="60" r="18" class="start" />
+  <text x="120" y="66" class="label">Start</text>
+
+  <!-- Select Equipment -->
+  <rect x="220" y="40" width="200" height="40" class="box" />
+  <text x="260" y="68" class="label">Select Equipment</text>
+
+  <!-- View Status -->
+  <rect x="220" y="120" width="200" height="40" class="box" />
+  <text x="270" y="148" class="label">View Status</text>
+
+  <!-- Schedule Maintenance -->
+  <rect x="220" y="200" width="240" height="40" class="box" />
+  <text x="260" y="228" class="label">Schedule Maintenance</text>
+
+  <!-- Update Database -->
+  <rect x="220" y="280" width="200" height="40" class="box" />
+  <text x="260" y="308" class="label">Update Database</text>
+
+  <!-- Send Notification -->
+  <rect x="220" y="360" width="240" height="40" class="box" />
+  <text x="260" y="388" class="label">Send Notification</text>
+
+  <!-- End -->
+  <rect x="720" y="360" width="120" height="40" rx="20" class="end" />
+  <text x="750" y="388" font-family="sans-serif" font-size="13" fill="#fff">End</text>
+
+  <!-- Arrows -->
+  <path d="M100 60 L220 60" class="arrow" />
+  <path d="M320 80 L320 120" class="arrow" />
+  <path d="M320 160 L320 200" class="arrow" />
+  <path d="M320 240 L320 280" class="arrow" />
+  <path d="M320 320 L320 360" class="arrow" />
+  <path d="M460 380 L720 380" class="arrow" />
+
+  <!-- Short notes -->
+  <text x="20" y="480" font-size="11" fill="#555">Activity: Start → Select Equipment → View Status → Schedule Maintenance → Update Database → Send Notification → End</text>
+</svg>
