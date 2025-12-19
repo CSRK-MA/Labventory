@@ -16,7 +16,7 @@ export function Header({ onGetStarted }: HeaderProps) {
             </div>
             <div>
                 <h1 className="text-lg sm:text-xl text-gray-900">
-                  Wayamba University of Sri Lanka
+                  Wayamba University of Sri Lanka Kuliyapitiya
                 </h1>
                 <p className="text-xs sm:text-sm text-gray-600">
                   Laboratory Inventory Management System
